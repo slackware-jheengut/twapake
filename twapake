@@ -1,0 +1,145 @@
+#!/usr/bin/env perl
+#
+# twapake.pl
+#
+# Copyright 2010-2011 Frédéric Galusik <fredg~at~salixos~dot~org>
+# License: BSD Revised
+#
+###############################################################################
+
+use strict;
+use warnings;
+use POSIX;
+use Getopt::Long;
+use File::stat;
+use File::Path;
+
+( $< == 0 ) or die "Sorry, but only root can run this script.\n";
+
+my $VERSION = 0.2;
+
+#
+# help - usage
+#
+sub usage {
+    print "Usage: $0 [options]\n\n";
+    print "Options:\n";
+    print " -l | --logfile\t\tprint snapshot logfile to /var/log/twapake/\n";
+    print " -i | --installed\tprint a sorted list of packages\n";
+    print " -n | --nlpkg\t\tused with -i, print the last N installed packages\n";
+    print " -v | --version\t\tprint twapake version\n";
+    print " -h | --help\t\tprint this message\n";
+    exit 0;
+    }
+
+# The place where Slackware store installed packages log files
+my $pkgdir = "/var/log/packages";
+
+#
+#
+my $file;
+my $now = localtime;
+my $nowfile = strftime("%Y-%m-%d-%H-%M-%S", localtime(time));
+our ( $a, $b );
+
+# the place to store twapake log files
+my $twa_path = "/var/log/twapake";
+mkpath $twa_path, 1, 0755;
+
+#
+# get the packages list
+#
+opendir(DIR, $pkgdir) or die "Cannot open '$pkgdir' : $!\n";
+my @files = grep !/^\./, readdir(DIR);
+closedir(DIR);
+
+#
+# get the total of installed packages
+#
+sub nbpkg {
+    my $npkg = @files;
+    return $npkg;
+}
+
+#
+# build a hash with key = pkg name and value = last time modification
+#
+keys my %hache = @files;
+foreach $file (@files) {
+    my $stpkg = stat("$pkgdir/$file");
+    $hache{$file} = $stpkg->mtime;
+}
+
+#
+# sort hash by descending value date
+#
+sub sortmtime {
+   $hache{$b} <=> $hache{$a};
+}
+my @sortfiles = sort sortmtime @files;
+
+#
+# make the twapake snapshot:
+# installed date - package name
+#
+sub twalog {
+    open(TWAFILE, ">$twa_path/${nowfile}_twapake.log");
+    print TWAFILE "\nTwapake snapshot on $now\n";
+    print TWAFILE '='x75 ."\n\n";
+    print TWAFILE "Installed dates\t\t\tPackages (total: ", nbpkg(), ")\n";
+    print TWAFILE '-'x24 ."\t" . '-'x40 ."\n";
+    for $file (@sortfiles) {
+        printf TWAFILE "%s\t%s\n",
+        scalar localtime $hache{$file}, $file;
+    }
+    close(TWAFILE);
+}
+
+#
+# make a less detailed list
+# give the choice of number of packages
+#
+my $nlpkg;
+sub sortmtimelist {
+    $nlpkg = nbpkg() unless defined($nlpkg);
+    my $nlpkg2 = $nlpkg - 1;
+    if ($nlpkg2 > nbpkg()) {
+        die "Error: only ", nbpkg(), " packages are installed.\n";
+        }
+    foreach $file ( 0..$nlpkg2 ) {
+        print "$sortfiles[$file]\n";
+    }
+}
+
+#
+# CLI options
+#
+my $version;
+my $help;
+my $logfile;
+my $installed;
+GetOptions(
+    'version' => \$version,
+    'help' => \&usage,
+    'logfile' => \$logfile,
+    'installed' => \$installed,
+    'nlpkg=i' => \$nlpkg,
+    );
+if ($version) {
+    print "Twapake, version $VERSION\n";
+    print "Copyright 2010-2011 Frédéric Galusik\n";
+    print "https://github.com/fredg/twapake\n";
+    exit 0;
+    }
+if ($logfile) {
+    twalog();
+    print "Writing $twa_path/${nowfile}_twapake.log ...\n";
+    exit 0;
+    }
+if ($installed) {
+    sortmtimelist();
+    exit 0;
+    }
+else {
+    die "Wrong usage, run twapake --help for information.\n";
+    }

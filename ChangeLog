@@ -1,0 +1,11 @@
+version 0.2:
+            - add a --nlpkg (-n) option to use with -i to specify how many
+            last packages have to be printed to STDOUT
+            - change the output format of the twapake snapshot to be more
+            human readable
+
+version 0.1.0.1: some typos
+
+version 0.1: first try
+            - --logfile (-l) print a twapake snapshot logfile
+            - --installed (-i) print a simple sorted list to STDOUT

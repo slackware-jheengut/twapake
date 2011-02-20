@@ -1,0 +1,10 @@
+
+Copyright Frédéric Galusik <fredg~at~salixos~dot~org> Lyon, France.
+
+Twapake is a simple tool for easily track installed packages.
+Twapake can make a log file with installed packages sorted and with 
+installed date printed, it can also print to STDOUT the N last 
+installed packages.
+
+Contributors:
+

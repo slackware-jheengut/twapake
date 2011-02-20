@@ -1,0 +1,10 @@
+###############################################################################
+#                                                                             #
+#                                 TODO                                        #
+#                                 ----                                        #
+###############################################################################
+
+DONE - print a list of packages sorted by installed date
+DONE - print this list as a log file /var/log/twapake/$date_twapake.log
+DONE - let the user choose the number of packages to br printed
+____ - choose packages in a twapake list for removal, choose a UI
