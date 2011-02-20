@@ -26,7 +26,8 @@ sub usage {
     print "Options:\n";
     print " -l | --logfile\t\tprint snapshot logfile to /var/log/twapake/\n";
     print " -i | --installed\tprint a sorted list of packages\n";
-    print " -n | --nlpkg\t\tused with -i, print the last N installed packages\n";
+    print " -n | --nlpkg\t\tused with -i or -r, choose the last N installed packages\n";
+    print " -r | --remove\t\tremove the last N installed packages\n";
     print " -v | --version\t\tprint twapake version\n";
     print " -h | --help\t\tprint this message\n";
     exit 0;
