@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 #
-# twapake.pl
+#       twapake.pl
 #
-# Copyright 2010-2011 Frédéric Galusik <fredg~at~salixos~dot~org>
-# License: BSD Revised
+#       Copyright 2010-2011 Frédéric Galusik <fredg~at~salixos~dot~org>
+#       License: BSD Revised
 #
 ###############################################################################
 
@@ -14,9 +14,9 @@ use Getopt::Long;
 use File::stat;
 use File::Path;
 
-( $< == 0 ) or die "Sorry, but only root can run this script.\n";
+#( $< == 0 ) or die "Sorry, but only root can run this script.\n";
 
-my $VERSION = 0.2;
+my $VERSION = 0.21;
 
 #
 # help - usage
@@ -100,14 +100,36 @@ sub twalog {
 # give the choice of number of packages
 #
 my $nlpkg;
-sub sortmtimelist {
-    $nlpkg = nbpkg() unless defined($nlpkg);
-    my $nlpkg2 = $nlpkg - 1;
-    if ($nlpkg2 > nbpkg()) {
+$nlpkg = nbpkg() unless defined($nlpkg);
+sub checknpkg {
+    if ($nlpkg > nbpkg()) {
         die "Error: only ", nbpkg(), " packages are installed.\n";
-        }
-    foreach $file ( 0..$nlpkg2 ) {
+    }
+}
+
+sub sortmtimelist {
+    checknpkg();
+    foreach $file ( 0..($nlpkg - 1) ) {
         print "$sortfiles[$file]\n";
+    }
+}
+
+sub rmpkg {
+    checknpkg();
+    print "Do you wish to remove all these packages ?\n\n";
+    foreach $file ( 0..($nlpkg - 1) ) {
+        print "$sortfiles[$file]\n";
+    }
+    print "\n";
+    print "(y)es or (n)o ?\n";
+    if ((my $answer = <STDIN>) =~ /^y$/i) {
+        # have to come
+        said_yes();
+    } elsif ($answer =~ /^n$/i) {
+        die "aborting ...";
+    } else {
+        chomp $answer;
+        die "'$answer' is neither 'yes' nor 'no'";
     }
 }
 
@@ -118,17 +140,19 @@ my $version;
 my $help;
 my $logfile;
 my $installed;
+my $remove;
 GetOptions(
-    'version' => \$version,
-    'help' => \&usage,
-    'logfile' => \$logfile,
-    'installed' => \$installed,
-    'nlpkg=i' => \$nlpkg,
+    'version'    =>  \$version,
+    'help'       =>  \&usage,
+    'logfile'    =>  \$logfile,
+    'installed'  =>  \$installed,
+    'nlpkg=i'    =>  \$nlpkg,
+    'remove'     =>  \$remove,
     );
 if ($version) {
     print "Twapake, version $VERSION\n";
     print "Copyright 2010-2011 Frédéric Galusik\n";
-    print "https://github.com/fredg/twapake\n";
+    print "http://salix.svn.sourceforge.net/viewvc/salix/twapake\n";
     exit 0;
     }
 if ($logfile) {
@@ -138,6 +162,10 @@ if ($logfile) {
     }
 if ($installed) {
     sortmtimelist();
+    exit 0;
+    }
+if ($remove) {
+    rmpkg();
     exit 0;
     }
 else {
