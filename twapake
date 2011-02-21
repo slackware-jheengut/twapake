@@ -14,7 +14,7 @@ use Getopt::Long;
 use File::stat;
 use File::Path;
 
-#( $< == 0 ) or die "Sorry, but only root can run this script.\n";
+( $< == 0 ) or die "Sorry, but only root can run this script.\n";
 
 my $VERSION = 0.21;
 
@@ -35,6 +35,11 @@ sub usage {
 
 # The place where Slackware store installed packages log files
 my $pkgdir = "/var/log/packages";
+
+# The command to remove packages :
+# Slackware : removepkg
+# Salix : spkg -d or removepkg
+my $rm_command = "spkg -d";
 
 #
 #
@@ -117,15 +122,16 @@ sub sortmtimelist {
 
 sub rmpkg {
     checknpkg();
-    print "Do you wish to remove all these packages ?\n\n";
+    print "Do you wish to remove all these packages ?\n";
     foreach $file ( 0..($nlpkg - 1) ) {
         print "$sortfiles[$file]\n";
     }
-    print "\n";
-    print "(y)es or (n)o ?\n";
+    print "(y)es or (n)o ? ";
     if ((my $answer = <STDIN>) =~ /^y$/i) {
-        # have to come
-        said_yes();
+        foreach $file ( 0..($nlpkg - 1) ) {
+            print "Removing $sortfiles[$file]...\n";
+            system ("$rm_command $sortfiles[$file]");
+        }
     } elsif ($answer =~ /^n$/i) {
         die "aborting ...";
     } else {
