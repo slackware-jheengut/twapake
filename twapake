@@ -37,9 +37,19 @@ sub usage {
 my $pkgdir = "/var/log/packages";
 
 # The command to remove packages :
-# Slackware : removepkg
-# Salix : spkg -d or removepkg
-my $rm_command = "spkg -d";
+# Slackware : removepkg - Salix : spkg -d or removepkg
+# use spkg by default
+my $rm_command;
+my $removepkg = "/sbin/removepkg";
+my $spkg = "/sbin/spkg";
+my $spkgd = "/sbin/spkg -d";
+if ( -e $spkg && -e $removepkg ) {
+    $rm_command = $spkgd;
+    } elsif (-e $removepkg && ! -e $spkg ) {
+        $rm_command = $removepkg;
+        } else {
+            die "pkgtool and/or spkg are not installed, aborting...\n";
+            }
 
 #
 #
@@ -129,14 +139,13 @@ sub rmpkg {
     print "(y)es or (n)o ? ";
     if ((my $answer = <STDIN>) =~ /^y$/i) {
         foreach $file ( 0..($nlpkg - 1) ) {
-            print "Removing $sortfiles[$file]...\n";
             system ("$rm_command $sortfiles[$file]");
         }
     } elsif ($answer =~ /^n$/i) {
-        die "aborting ...";
+        die "aborting ...\n";
     } else {
         chomp $answer;
-        die "'$answer' is neither 'yes' nor 'no'";
+        die "'$answer' is neither 'y' for 'yes' nor 'n' for 'no'\n";
     }
 }
 
