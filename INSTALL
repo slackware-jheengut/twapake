@@ -1,0 +1,11 @@
+Installation
+------------
+
+To install, run as root:
+
+ ./install.sh
+
+
+Optionnaly, you can set DESTDIR to suit your need, for example:
+DESTDIR=$PKG ./install.sh
+Where $PKG can be /what/you/want
