@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+# print an every day twapake snapshot in /var/log/twapake/
+/usr/sbin/twapake --logfile

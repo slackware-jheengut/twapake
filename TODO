@@ -9,4 +9,8 @@ DONE - print this list as a log file /var/log/twapake/$date_twapake.log
 DONE - let the user choose the number of packages to be printed
 DONE - let the user remove those packages
 DONE - if pkgtool and spkg are both installed, use spkg, else removepkg
-____ - choose packages in a twapake list for removal, choose a UI
+____ - man page
+____ - homepage
+____ - clean log dir
+____ - print diff between 2 dates
+____ - choose packages in a twapake list for easy removal, choose a UI
