@@ -1,0 +1,85 @@
+Twapake is a utility for Slackware and Slackware based operating
+systems only.
+
+Features:
+--------
+    - print a list of N packages sorted by installed date to STDOUT.
+    - print a "twapake snapshot", a list of packages sorted by
+    installed date in a log file (/var/log/twapake/$date_twapake.log).
+    - can remove the last N installed packages.
+    - ... (see TODO)
+
+Download:
+---------
+Sources tarballs and Slackware packages can be found there:
+http://people.salixos.org/fredg/packages/twapake/
+
+
+Twapake can be usefull when:
+----------------------------
+    - making a daily snapshot with the help of a cron job.
+      If you are getting into troubles, it will be easy to see which new
+      packages have been installed since time T.
+    - you like testing a lot off packages, some of them making you install
+      a bunch of extra libs.
+      You can print a twapake snapshot before your testing party and after.
+      The diff will give you the list of what you have to remove to
+      retrieve a clean system.
+    - you want to see what are the last 5 installed packages.
+    - you want to remove the last 6 installed packages.
+
+
+
+What is a twapkake snapshot (twapake --logfile)
+-----------------------------------------------
+
+It's a file /var/log/twapake/$date_twapake.log
+
+Twapake snapshot on Thu Feb 17 04:40:49 2011
+===========================================================================
+
+Installed dates             Packages (total: 793)
+------------------------    ----------------------------------------
+Mon Feb 14 19:58:22 2011    salixtools-gtk-1.2.0-noarch-1gv
+Mon Feb 14 19:58:20 2011    salixtools-1.5.0-noarch-1gv
+Mon Feb 14 19:58:19 2011    depfinder-1.3.8-x86_64-1gv
+Sun Feb 13 19:46:30 2011    libetpan-1.0-x86_64-1tm
+Sun Feb 13 19:46:30 2011    claws-mail-3.7.8-x86_64-2tm
+Sun Feb 13 19:07:07 2011    libmatroska-1.0.0-x86_64-1gv
+Sun Feb 13 19:07:07 2011    vlc-1.1.7-x86_64-1tm
+Sun Feb 13 19:07:07 2011    libebml-1.0.0-x86_64-1gv
+Sun Feb 13 19:07:06 2011    libdvbpsi-0.1.7-x86_64-1tm
+Sun Feb 13 14:49:04 2011    etm-702-x86_64-1fg
+Sun Feb 13 14:34:34 2011    wxPython-2.8.11.0-x86_64-1ab
+Sun Feb 13 14:28:17 2011    slapt-update-service-0.5.0b-x86_64-2gv
+Sun Feb 13 14:28:09 2011    ...
+...
+..
+.
+
+
+For a less detailed list (twapake -i)
+-------------------------------------
+
+salixtools-gtk-1.2.0-noarch-1gv
+salixtools-1.5.0-noarch-1gv
+depfinder-1.3.8-x86_64-1gv
+libetpan-1.0-x86_64-1tm
+claws-mail-3.7.8-x86_64-2tm
+libmatroska-1.0.0-x86_64-1gv
+vlc-1.1.7-x86_64-1tm
+libebml-1.0.0-x86_64-1gv
+libdvbpsi-0.1.7-x86_64-1tm
+etm-702-x86_64-1fg
+...
+..
+.
+
+You can choose the number of packages to be printed:
+twapake -i -n 5 : last 5 installed packages
+
+
+Removing last installed packages
+--------------------------------
+twapake -r -n 5 : remove the last 5 installed packages
+
