@@ -37,19 +37,21 @@ sub usage {
 my $pkgdir = "/var/log/packages";
 
 # The command to remove packages :
-# Slackware : removepkg - Salix : spkg -d or removepkg
+# Slackware : removepkg (pkgtool) - Salix : spkg -d or removepkg
 # use spkg by default
 my $rm_command;
 my $removepkg = "/sbin/removepkg";
 my $spkg = "/sbin/spkg";
 my $spkgd = "/sbin/spkg -d";
-if ( -e $spkg && -e $removepkg ) {
-    $rm_command = $spkgd;
-    } elsif (-e $removepkg && ! -e $spkg ) {
-        $rm_command = $removepkg;
-        } else {
-            die "pkgtool and/or spkg are not installed, aborting...\n";
+sub checkrm {
+    if ( -e $spkg and -e $removepkg ) {
+        $rm_command = $spkgd;
+        } elsif (-e $removepkg and not -e $spkg ) {
+            $rm_command = $removepkg;
+            } else {
+                die "Nor pkgtool or spkg are installed, aborting...\n";
             }
+}
 
 #
 #
@@ -132,6 +134,7 @@ sub sortmtimelist {
 
 sub rmpkg {
     checknpkg();
+    checkrm();
     print "Do you wish to remove all these packages ?\n";
     foreach $file ( 0..($nlpkg - 1) ) {
         print "$sortfiles[$file]\n";
