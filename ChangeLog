@@ -1,3 +1,9 @@
+* version 0.3:
+    - add --remove (-r) to use with -n : remove the last N installed
+    packages.
+    - use spkg by default else removepkg for removing packages
+    - add cron job
+
 * version 0.2:
     - add a --nlpkg (-n) option to use with -i to specify how many
     last packages have to be printed to STDOUT
