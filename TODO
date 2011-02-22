@@ -6,5 +6,7 @@
 
 DONE - print a list of packages sorted by installed date
 DONE - print this list as a log file /var/log/twapake/$date_twapake.log
-DONE - let the user choose the number of packages to br printed
+DONE - let the user choose the number of packages to be printed
+DONE - let the user remove those packages
+DONE - if pkgtool and spkg are both installed, use spkg, else removepkg
 ____ - choose packages in a twapake list for removal, choose a UI
