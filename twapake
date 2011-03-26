@@ -103,12 +103,12 @@ my @sortfiles = sort sortmtime @files;
 sub twalog {
     open(TWAFILE, ">$twa_path/${nowfile}_twapake.log");
     print TWAFILE "\nTwapake snapshot on $now\n";
-    print TWAFILE '='x75 ."\n\n";
+    print TWAFILE '='x72 ."\n\n";
     print TWAFILE "Installed dates\t\t\tPackages (total: ", nbpkg(), ")\n";
-    print TWAFILE '-'x24 ."\t" . '-'x40 ."\n";
+    print TWAFILE '-'x19 ."\t" . '-'x45 ."\n";
     for $file (@sortfiles) {
         printf TWAFILE "%s\t%s\n",
-        scalar localtime $hache{$file}, $file;
+        strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})), $file;
     }
     close(TWAFILE);
 }
