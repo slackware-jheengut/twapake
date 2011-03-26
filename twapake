@@ -104,7 +104,7 @@ sub twalog {
     open(TWAFILE, ">$twa_path/${nowfile}_twapake.log");
     print TWAFILE "\nTwapake snapshot on $now\n";
     print TWAFILE '='x72 ."\n\n";
-    print TWAFILE "Installed dates\t\t\tPackages (total: ", nbpkg(), ")\n";
+    print TWAFILE "Installed dates\t\tPackages (total: ", nbpkg(), ")\n";
     print TWAFILE '-'x19 ."\t" . '-'x45 ."\n";
     for $file (@sortfiles) {
         printf TWAFILE "%s\t%s\n",
@@ -152,6 +152,20 @@ sub rmpkg {
     }
 }
 
+my $userdate;
+sub userdate_default {
+        my $today = strftime("%Y-%m-%d", localtime(time));
+        return $today;
+}
+$userdate = userdate_default() unless defined($userdate);
+sub choosedate {
+    for $file (@sortfiles) {
+        if (strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})) gt $userdate) {
+            print "$file\n";
+        }
+    }
+}
+
 #
 # CLI options
 #
@@ -159,6 +173,7 @@ my $version;
 my $help;
 my $logfile;
 my $installed;
+my $cdate;
 my $remove;
 GetOptions(
     'version'    =>  \$version,
@@ -167,6 +182,8 @@ GetOptions(
     'installed'  =>  \$installed,
     'nlpkg=i'    =>  \$nlpkg,
     'remove'     =>  \$remove,
+    'cdate'      =>  \$cdate,
+    'userdate=s' =>  \$userdate,
     );
 if ($version) {
     print "Twapake, version $VERSION\n";
@@ -185,6 +202,10 @@ if ($installed) {
     }
 if ($remove) {
     rmpkg();
+    exit 0;
+    }
+if ($cdate) {
+    choosedate();
     exit 0;
     }
 else {
