@@ -28,6 +28,8 @@ sub usage {
     print " -i | --installed\tprint a sorted list of packages\n";
     print " -n | --nlpkg\t\tused with -i or -r, choose the last N installed packages\n";
     print " -r | --remove\t\tremove the last N installed packages\n";
+    print " -s | --since\t\tprint today installed packages\n";
+    print " -c | --choosedate\tused with -s, choose the date\n";
     print " -v | --version\t\tprint twapake version\n";
     print " -h | --help\t\tprint this message\n";
     exit 0;
@@ -152,15 +154,15 @@ sub rmpkg {
     }
 }
 
-my $userdate;
+my $choosedate;
 sub userdate_default {
         my $today = strftime("%Y-%m-%d", localtime(time));
         return $today;
 }
-$userdate = userdate_default() unless defined($userdate);
-sub choosedate {
+$choosedate = userdate_default() unless defined($choosedate);
+sub installedsince {
     for $file (@sortfiles) {
-        if (strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})) gt $userdate) {
+        if (strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})) gt $choosedate) {
             print "$file\n";
         }
     }
@@ -173,7 +175,7 @@ my $version;
 my $help;
 my $logfile;
 my $installed;
-my $cdate;
+my $since;
 my $remove;
 GetOptions(
     'version'    =>  \$version,
@@ -182,13 +184,13 @@ GetOptions(
     'installed'  =>  \$installed,
     'nlpkg=i'    =>  \$nlpkg,
     'remove'     =>  \$remove,
-    'cdate'      =>  \$cdate,
-    'userdate=s' =>  \$userdate,
+    'since'      =>  \$since,
+    'choosedate=s' =>  \$choosedate,
     );
 if ($version) {
     print "Twapake, version $VERSION\n";
     print "Copyright 2010-2011 Frédéric Galusik\n";
-    print "http://salix.svn.sourceforge.net/viewvc/salix/twapake\n";
+    print "http://www.salixos.org/wiki/index.php/Twapake\n";
     exit 0;
     }
 if ($logfile) {
@@ -204,8 +206,8 @@ if ($remove) {
     rmpkg();
     exit 0;
     }
-if ($cdate) {
-    choosedate();
+if ($since) {
+    installedsince();
     exit 0;
     }
 else {
