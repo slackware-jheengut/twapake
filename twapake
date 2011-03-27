@@ -134,6 +134,9 @@ sub sortmtimelist {
     }
 }
 
+#
+# remove last installed packages
+#
 sub rmpkg {
     checknpkg();
     checkrm();
@@ -154,12 +157,30 @@ sub rmpkg {
     }
 }
 
+#
+# show installed packages since a choosen date
+#
 my $choosedate;
 sub userdate_default {
-        my $today = strftime("%Y-%m-%d", localtime(time));
-        return $today;
+    my $today = strftime("%Y-%m-%d", localtime(time));
+    return $today;
 }
 $choosedate = userdate_default() unless defined($choosedate);
+sub checkdate {
+    if ($choosedate =~ m!^((?:19|20)\d\d)[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$!) {
+    # $1 year $2 month $3 day
+    if ($3 == 31 and ($2 == 4 or $2 == 6 or $2 == 9 or $2 == 11)) {
+      die "Sorry but this month has not 31 days!\n";
+    } elsif ($3 >= 30 and $2 == 2) {
+      die "Sorry but February has not as much days!\n";
+    } elsif ($2 == 2 and $3 == 29 and not ($1 % 4 == 0 and ($1 % 100 != 0 or $1 % 400 == 0))) {
+      die "Sorry but it is not a leap year\n";
+    }
+  } else {
+    die "Sorry but date format must be YYYY-mm-dd!\n";
+  }
+}
+
 sub installedsince {
     for $file (@sortfiles) {
         if (strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})) gt $choosedate) {
@@ -207,6 +228,8 @@ if ($remove) {
     exit 0;
     }
 if ($since) {
+    checkdate();
+    #dateisvalid();
     installedsince();
     exit 0;
     }
