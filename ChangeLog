@@ -1,3 +1,8 @@
+* version 0.4:
+	- add --since (-s): print today installed packages
+	- add -u to use with -s: print installed packages since a choosen date
+	- change the date format of the twalog file to be more internationnal
+
 * version 0.3:
     - add --remove (-r) to use with -n : remove the last N installed
     packages.
