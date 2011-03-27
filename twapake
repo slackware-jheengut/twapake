@@ -16,7 +16,7 @@ use File::Path;
 
 ( $< == 0 ) or die "Sorry, but only root can run this script.\n";
 
-my $VERSION = 0.3;
+my $VERSION = 0.4;
 
 #
 # help - usage
@@ -229,7 +229,6 @@ if ($remove) {
     }
 if ($since) {
     checkdate();
-    #dateisvalid();
     installedsince();
     exit 0;
     }
