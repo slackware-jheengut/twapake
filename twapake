@@ -9,14 +9,17 @@
 
 use strict;
 use warnings;
-use POSIX;
 use Getopt::Long;
-use File::stat;
-use File::Path;
+use Curses::UI;
+
+use Twapake;
+use Twacurse;
 
 ( $< == 0 ) or die "Sorry, but only root can run this script.\n";
 
-my $VERSION = 0.4;
+my $VERSION = 0.5;
+
+my $Twapake = Twapake->new();
 
 #
 # help - usage
@@ -30,164 +33,11 @@ sub usage {
     print " -r | --remove\t\tremove the last N installed packages\n";
     print " -s | --since\t\tprint today installed packages\n";
     print " -c | --choosedate\tused with -s, choose the date\n";
+    print " -u | --ui\t\tlaunch the Curses Interface for an easy removal\n";
     print " -v | --version\t\tprint twapake version\n";
     print " -h | --help\t\tprint this message\n";
     exit 0;
     }
-
-# The place where Slackware store installed packages log files
-my $pkgdir = "/var/log/packages";
-
-# The command to remove packages :
-# Slackware : removepkg (pkgtool) - Salix : spkg -d or removepkg
-# use spkg by default
-my $rm_command;
-my $removepkg = "/sbin/removepkg";
-my $spkg = "/sbin/spkg";
-my $spkgd = "/sbin/spkg -d";
-sub checkrm {
-    if ( -e $spkg and -e $removepkg ) {
-        $rm_command = $spkgd;
-        } elsif (-e $removepkg and not -e $spkg ) {
-            $rm_command = $removepkg;
-            } else {
-                die "Nor pkgtool or spkg are installed, aborting...\n";
-            }
-}
-
-#
-#
-my $file;
-my $now = localtime;
-my $nowfile = strftime("%Y-%m-%d-%H-%M-%S", localtime(time));
-our ( $a, $b );
-
-# the place to store twapake log files
-my $twa_path = "/var/log/twapake";
-mkpath $twa_path, 1, 0755;
-
-#
-# get the packages list
-#
-opendir(DIR, $pkgdir) or die "Cannot open '$pkgdir' : $!\n";
-my @files = grep !/^\./, readdir(DIR);
-closedir(DIR);
-
-#
-# get the total of installed packages
-#
-sub nbpkg {
-    my $npkg = @files;
-    return $npkg;
-}
-
-#
-# build a hash with key = pkg name and value = last time modification
-#
-keys my %hache = @files;
-foreach $file (@files) {
-    my $stpkg = stat("$pkgdir/$file");
-    $hache{$file} = $stpkg->mtime;
-}
-
-#
-# sort hash by descending value date
-#
-sub sortmtime {
-   $hache{$b} <=> $hache{$a};
-}
-my @sortfiles = sort sortmtime @files;
-
-#
-# make the twapake snapshot:
-# installed date - package name
-#
-sub twalog {
-    open(TWAFILE, ">$twa_path/${nowfile}_twapake.log");
-    print TWAFILE "\nTwapake snapshot on $now\n";
-    print TWAFILE '='x72 ."\n\n";
-    print TWAFILE "Installed dates\t\tPackages (total: ", nbpkg(), ")\n";
-    print TWAFILE '-'x19 ."\t" . '-'x45 ."\n";
-    for $file (@sortfiles) {
-        printf TWAFILE "%s\t%s\n",
-        strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})), $file;
-    }
-    close(TWAFILE);
-}
-
-#
-# make a less detailed list
-# give the choice of number of packages
-#
-my $nlpkg;
-$nlpkg = nbpkg() unless defined($nlpkg);
-sub checknpkg {
-    if ($nlpkg > nbpkg()) {
-        die "Error: only ", nbpkg(), " packages are installed.\n";
-    }
-}
-
-sub sortmtimelist {
-    checknpkg();
-    foreach $file ( 0..($nlpkg - 1) ) {
-        print "$sortfiles[$file]\n";
-    }
-}
-
-#
-# remove last installed packages
-#
-sub rmpkg {
-    checknpkg();
-    checkrm();
-    print "Do you wish to remove all these packages ?\n";
-    foreach $file ( 0..($nlpkg - 1) ) {
-        print "$sortfiles[$file]\n";
-    }
-    print "(y)es or (n)o ? ";
-    if ((my $answer = <STDIN>) =~ /^y$/i) {
-        foreach $file ( 0..($nlpkg - 1) ) {
-            system ("$rm_command $sortfiles[$file]");
-        }
-    } elsif ($answer =~ /^n$/i) {
-        die "aborting ...\n";
-    } else {
-        chomp $answer;
-        die "'$answer' is neither 'y' for 'yes' nor 'n' for 'no'\n";
-    }
-}
-
-#
-# show installed packages since a choosen date
-#
-my $choosedate;
-sub userdate_default {
-    my $today = strftime("%Y-%m-%d", localtime(time));
-    return $today;
-}
-$choosedate = userdate_default() unless defined($choosedate);
-sub checkdate {
-    if ($choosedate =~ m!^((?:19|20)\d\d)[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$!) {
-    # $1 year $2 month $3 day
-    if ($3 == 31 and ($2 == 4 or $2 == 6 or $2 == 9 or $2 == 11)) {
-      die "Sorry but this month has not 31 days!\n";
-    } elsif ($3 >= 30 and $2 == 2) {
-      die "Sorry but February has not as much days!\n";
-    } elsif ($2 == 2 and $3 == 29 and not ($1 % 4 == 0 and ($1 % 100 != 0 or $1 % 400 == 0))) {
-      die "Sorry but it is not a leap year\n";
-    }
-  } else {
-    die "Sorry but date format must be YYYY-mm-dd!\n";
-  }
-}
-
-sub installedsince {
-    for $file (@sortfiles) {
-        if (strftime("%Y-%m-%d %H:%M:%S", localtime($hache{$file})) gt $choosedate) {
-            print "$file\n";
-        }
-    }
-}
 
 #
 # CLI options
@@ -198,15 +48,17 @@ my $logfile;
 my $installed;
 my $since;
 my $remove;
+my $ui;
 GetOptions(
-    'version'    =>  \$version,
-    'help'       =>  \&usage,
-    'logfile'    =>  \$logfile,
-    'installed'  =>  \$installed,
-    'nlpkg=i'    =>  \$nlpkg,
-    'remove'     =>  \$remove,
-    'since'      =>  \$since,
-    'choosedate=s' =>  \$choosedate,
+    'version'      =>  \$version,
+    'help'         =>  \&usage,
+    'logfile'      =>  \$logfile,
+    'installed'    =>  \$installed,
+    'nlpkg=i'      =>  \$Twapake::nlpkg,
+    'remove'       =>  \$remove,
+    'since'        =>  \$since,
+    'choosedate=s' =>  \$Twapake::choosedate,
+    'ui'           =>  \$ui,
     );
 if ($version) {
     print "Twapake, version $VERSION\n";
@@ -215,22 +67,25 @@ if ($version) {
     exit 0;
     }
 if ($logfile) {
-    twalog();
-    print "Writing $twa_path/${nowfile}_twapake.log ...\n";
+    Twapake->twalog();
+    print "Writing $Twapake::twa_path/${Twapake::nowfile}_twapake.log ...\n";
     exit 0;
     }
 if ($installed) {
-    sortmtimelist();
+    Twapake->sortmtimelist();
     exit 0;
     }
 if ($remove) {
-    rmpkg();
+    Twapake->rmpkg();
     exit 0;
     }
 if ($since) {
-    checkdate();
-    installedsince();
+    Twapake->checkdate();
+    Twapake->installedsince();
     exit 0;
+    }
+if ($ui) {
+    Twacurse->uic();
     }
 else {
     die "Wrong usage, run twapake --help for information.\n";
