@@ -20,16 +20,23 @@ my $win1 = $cui->add(
 );
 
 ## READ DATA
-my $pkgdir = "/var/log/packages";
-opendir(DIR, $pkgdir) or die "Cannot open '$pkgdir' : $!\n";
-my @files = grep !/^\./, readdir(DIR);
-closedir(DIR);
+my $pkgdir = "/home/fredg";
+my @files;
+sub get_files {
+    opendir(DIR, $pkgdir) or die "Cannot open '$pkgdir' : $!\n";
+    @files = grep !/^\./, readdir(DIR);
+    closedir(DIR);
+    return @files;
+}
+get_files();
 
 my @menu = (
     { -label => 'Menu',
       -submenu => [
         { -label => 'Remove selected packages   ^R',
           -value => \&remove_pkg },
+        { -label => 'Unselect All packages      ^U',
+          -value => \&unselectall },
         { -label => 'Exit                       ^Q',
           -value => \&exit_dialog }
     ]
@@ -44,6 +51,7 @@ my $menu = $cui->add(
 $cui->set_binding(sub {$menu->focus()}, "\cX");
 $cui->set_binding( \&exit_dialog , "\cQ");
 $cui->set_binding( \&remove_pkg , "\cR");
+$cui->set_binding( \&unselectall , "\cU");
 
 my $listpkgbox = $win1->add(
        'listpkgbox', 'Listbox',
@@ -52,10 +60,16 @@ my $listpkgbox = $win1->add(
        -x         => 10,
        -values    => \@files,
        -multi     => 1,
+       -intellidraw => 1,
 );
 
 $listpkgbox->focus();
-my @selected = $listpkgbox->get();
+
+sub unselectall {
+    $listpkgbox->clear_selection();
+    $listpkgbox->draw();
+    return;
+}
 
 sub exit_dialog {
     my $return = $cui->dialog(
@@ -68,12 +82,21 @@ sub exit_dialog {
 }
 
 sub remove_pkg {
-    my $listrmbox = $cui->listbox(
-        'listrmbox', 'Listbox',
+    my $yesrm = $cui->dialog(
+        -message   => "Do you really want to remove ?",
+        -title     => "Are you sure???",
         -bfg             => 'red',
-        -values    => \@selected,
+        -buttons   => ['yes', 'no'],
     );
-    $listrmbox->focus();
-}
+    if ($yesrm) {
+        my @selected = $listpkgbox->get();
+        for my $sel (@selected) {
+            system ("rm $pkgdir/$sel");
+            }
+        sleep(1);
+        get_files();
+        unselectall();
+        }
+    }
 
 $cui->mainloop();
