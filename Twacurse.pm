@@ -10,7 +10,9 @@ our $listpkgbox;
 
 sub uic {
     $cui = new Curses::UI ( -clear_on_exit => 1,
-                            -color_support => 1);
+                            -color_support => 1,
+                            -mouse_support => 0,
+                            );
     my $win1 = $cui->add(
        'win1', 'Window',
        -title           =>
@@ -30,7 +32,7 @@ sub uic {
             { -label => 'Remove selected packages   ^R',
               -value => \&remove_pkg },
             { -label => 'Unselect All packages      ^U',
-              -value => \&unselectall },
+              -value => \&unselect_all },
             { -label => 'Exit                       ^Q',
               -value => \&exit_dialog }
             ]
@@ -76,14 +78,12 @@ sub remove_pkg {
         -buttons   => ['yes', 'no'],
     );
     if ($yesrm) {
-        Twapake::checkrm();
         my @selected = $listpkgbox->get();
         for my $sel (@selected) {
             system ("$Twapake::rm_command $sel");
             }
         sleep(1);
         Twapake::get_files();
-        unselectall();
         }
     }
 

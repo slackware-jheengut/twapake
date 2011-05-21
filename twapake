@@ -85,6 +85,7 @@ if ($since) {
     exit 0;
     }
 if ($ui) {
+    Twapake->checkrm();
     Twacurse->uic();
     }
 else {
