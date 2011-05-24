@@ -2,6 +2,8 @@ package Twapake;
 
 #       Twapake.pm
 #
+#       This file is part of twapake
+#
 #       Copyright 2010-2011 Frédéric Galusik <fredg~at~salixos~dot~org>
 #       License: BSD Revised
 #
@@ -23,6 +25,7 @@ our $spkgd = "/sbin/spkg -d";
 
 our $file;
 our @files;
+our @sortfiles;
 our ( $a, $b );
 our $now = localtime;
 our $nowfile = strftime("%Y-%m-%d-%H-%M-%S", localtime(time));
@@ -81,10 +84,11 @@ foreach $file (@files) {
 #
 # sort hash by descending value date
 #
-sub sortmtime {
-   $hache{$b} <=> $hache{$a};
+sub sortfiles {
+    @sortfiles = sort { $hache{$b} <=> $hache{$a} } @files;
+    return @sortfiles;
 }
-our @sortfiles = sort sortmtime @files;
+sortfiles();
 
 #
 # make the twapake snapshot:

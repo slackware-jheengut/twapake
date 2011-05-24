@@ -1,4 +1,14 @@
 package Twacurse;
+
+#       Twacurse.pm
+#
+#       This file is part of twapake
+#
+#       Copyright 2010-2011 Frédéric Galusik <fredg~at~salixos~dot~org>
+#       License: BSD Revised
+#
+###############################################################################
+
 use strict;
 use warnings;
 
@@ -73,17 +83,23 @@ sub unselect_all {
 sub remove_pkg {
     my $yesrm = $cui->dialog(
         -message   => "Do you really want to remove ?",
-        -title     => "Are you sure???",
+        -title     => "Are you sure?",
         -bfg             => 'red',
         -buttons   => ['yes', 'no'],
     );
     if ($yesrm) {
         my @selected = $listpkgbox->get();
-        for my $sel (@selected) {
-            system ("$Twapake::rm_command $sel");
+        foreach (@selected) {
+            $cui->status("Removing $_");
+            system ("$Twapake::rm_command $_ > /dev/null");
             }
         sleep(1);
-        Twapake::get_files();
+        $cui->nostatus;
+        # update the packages list
+        Twapake->get_files();
+        Twapake->sortfiles();
+        unselect_all();
+        return;
         }
     }
 
