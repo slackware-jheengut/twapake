@@ -1,0 +1,110 @@
+twapake
+Frederic Galusik
+%%mtime(%m/%d/%Y)
+
+%!target: man
+%!encoding: utf-8
+
+= NAME =
+
+twapake - A simple perl tool to manage last installed packages and to
+keep a log of packages installed date
+
+
+= SYNOPSIS =
+
+**twapake** [//OPTIONS//]
+
+
+= DESCRIPTION =
+
+**Twapake** is a system administration utility for Slackware
+and Slackware based operating systems only, making easier the management
+of last installed packages and making easier seeing the installation
+date of a package.
+
+
+= GENERAL OPTIONS =
+
+: **-h**, **--help**
+Simple help
+
+: **-v**, **--version**
+Print Twapake version
+
+: **-l**, **--logfile**
+Print a snapshot logfile to the /var/log/twapake/ directory.
+A snapshot is a list of all packages sorted by installed date at T time.
+The installed date is printed too, making easier to see when a package
+has been installed on your system.
+
+: **-i**, **--installed**
+Print a simple sorted list of installed packages to STDOUT
+
+: **-n**, **--nlpkg**
+Used with **-i**. Let you choose how many **N** last installed packages
+you want to print to STDOUT
+
+: **-r**, **--remove**
+Remove the last **N** installed packages
+
+: **-s**, **--since**
+Print today installed packages to STDOUT
+
+: **-c**, **--choosedate**
+Used with **-s**. Print packages installed since this choosen date
+
+: **-u**, **--ui**
+Launch the Curses User Interface for an easier removal. You can choose
+the packages you want to remove in a list sorted by installed date
+
+
+= COMMAND LINE USAGE =
+Here are some usages examples.
+
+: **twapake -i -n 10**
+Print the 10 last installed packages to STDOUT
+
+: **twapake -r -n 5**
+Show you the last 5 installed packages and ask you if you want to remove
+them
+
+: **twapake -s -c 2011-05-25**
+Show you the packages installed on your system since the 2011-05-25
+
+
+= THE CURSES INTERFACE =
+Within the program you can use the following keys.
+
+: **UP / DOWN**
+Navigate the packages list
+
+: **SPACE**
+Select/Unselect a package
+
+: **Ctrl-X**
+Show you the menu
+
+: **Ctrl-U**
+Unselect all choosen packages
+
+: **Ctrl-R**
+Remove all selected packages
+
+: **Ctrl-Q**
+Quit Twapake
+
+
+= WEBSITE =
+
+http://www.salixos.org/wiki/index.php/Twapake
+
+
+= AUTHOR =
+
+Twapake was written by Frederic Galusik <fredg~at~salixos~dot~org>
+
+
+= SEE ALSO =
+
+**pkgtool**(8), **removepkg**(8), **spkg**(8)
