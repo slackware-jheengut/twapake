@@ -13,7 +13,7 @@ use strict;
 use warnings;
 
 use Curses::UI;
-use Twapake;
+use Twapake::Twapake;
 
 our $cui;
 our $listpkgbox;

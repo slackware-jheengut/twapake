@@ -12,8 +12,8 @@ use warnings;
 use Getopt::Long;
 use Curses::UI;
 
-use Twapake;
-use Twacurse;
+use Twapake::Twapake;
+use Twapake::Twacurse;
 
 ( $< == 0 ) or die "Sorry, but only root can run this script.\n";
 
