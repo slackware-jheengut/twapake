@@ -7,7 +7,7 @@ Features:
     - print a "twapake snapshot", a list of packages sorted by
     installed date in a log file (/var/log/twapake/$date_twapake.log).
     - can remove the last N installed packages.
-    - ... (see TODO)
+    - ...
 
 Download:
 ---------
