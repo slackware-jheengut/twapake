@@ -62,7 +62,7 @@ GetOptions(
     );
 if ($version) {
     print "Twapake, version $VERSION\n";
-    print "Copyright 2010-2011 Frédéric Galusik\n";
+    print "Copyright 2010-2012 Frédéric Galusik\n";
     print "http://www.salixos.org/wiki/index.php/Twapake\n";
     exit 0;
     }

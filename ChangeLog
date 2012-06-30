@@ -1,3 +1,4 @@
+
 * version 0.5:
     - add --ui (-u): launch the Curses User Interface for an easy removal
     - add a man page

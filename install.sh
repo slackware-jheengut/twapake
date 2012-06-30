@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# run this script to install twapake on your system
+#
+
 PERLVER=5.12.3
 PERLDIR=usr/lib${LIBDIRSUFFIX}/perl5/$PERLVER
 

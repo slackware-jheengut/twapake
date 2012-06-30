@@ -60,7 +60,7 @@ the packages you want to remove in a list sorted by installed date
 
 
 = COMMAND LINE USAGE =
-Here are some usages examples.
+Here are some usages examples:
 
 : **twapake -i -n 10**
 Print the 10 last installed packages to STDOUT

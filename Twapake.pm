@@ -15,7 +15,9 @@ use POSIX;
 use File::stat;
 use File::Path;
 
+#
 # The place where Slackware store installed packages log files
+#
 our $pkgdir = "/var/log/packages";
 
 our $rm_command;

@@ -18,6 +18,9 @@ use Twapake::Twapake;
 our $cui;
 our $listpkgbox;
 
+#
+# make da User Interface
+#
 sub uic {
     $cui = new Curses::UI ( -clear_on_exit => 1,
                             -color_support => 1,
